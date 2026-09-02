@@ -1,26 +1,44 @@
-import json
-from datetime import datetime
-
-from ping_test import run_ping_test
-from dns_test import run_dns_test
-from http_test import run_http_test
+from ping_test import ping_host
+from dns_test import test_dns
+from http_test import test_http
 
 
 def run_diagnosis():
-    print("Starting NetDoctor network diagnosis...")
 
-    result = {
-        "timestamp": datetime.now().isoformat(),
-        "ping": run_ping_test(),
-        "dns": run_dns_test(),
-        "http": run_http_test(),
-    }
+    print("=" * 50)
+    print("        NETDOCTOR DIAGNOSTIC AGENT")
+    print("=" * 50)
 
-    return result
+    print("\n[1] Running Ping Test...")
+
+    ping_result = ping_host(
+        host="8.8.8.8",
+        count=10
+    )
+
+    print(ping_result)
+
+    print("\n[2] Running DNS Tests...")
+
+    dns_results = test_dns(
+        domain="google.com"
+    )
+
+    for result in dns_results:
+        print(result)
+
+    print("\n[3] Running HTTP Test...")
+
+    http_result = test_http(
+        "https://www.google.com"
+    )
+
+    print(http_result)
+
+    print("\n" + "=" * 50)
+    print("          DIAGNOSIS DATA COLLECTED")
+    print("=" * 50)
 
 
 if __name__ == "__main__":
-    result = run_diagnosis()
-
-    print("\nDiagnosis data:")
-    print(json.dumps(result, indent=4))
+    run_diagnosis()
