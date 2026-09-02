@@ -1,0 +1,122 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #07111f;
+  color: #e8eef7;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 13px 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.app {
+  max-width: 1180px;
+  margin: auto;
+  padding: 42px 28px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+
+.eyebrow,
+.label {
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  opacity: 0.65;
+  font-weight: 700;
+}
+
+h1 {
+  margin: 4px 0;
+  font-size: 42px;
+}
+
+header p {
+  color: #9eabc0;
+}
+
+.health,
+.diagnosis {
+  margin-top: 30px;
+  padding: 28px;
+  border: 1px solid #1c2c42;
+  border-radius: 18px;
+  background: #0b1829;
+}
+
+.score {
+  font-size: 58px;
+  font-weight: 800;
+}
+
+.score small {
+  font-size: 20px;
+  opacity: 0.5;
+}
+
+.status {
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.metrics {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.metric-card {
+  padding: 22px;
+  border: 1px solid #1c2c42;
+  border-radius: 14px;
+  background: #0b1829;
+}
+
+.metric-card span {
+  display: block;
+  color: #9eabc0;
+  margin-bottom: 12px;
+}
+
+.metric-card strong {
+  font-size: 25px;
+}
+
+.diagnosis h2 {
+  margin: 8px 0;
+}
+
+.diagnosis p:last-child {
+  color: #9eabc0;
+  max-width: 720px;
+  line-height: 1.6;
+}
+
+@media (max-width: 750px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+}
