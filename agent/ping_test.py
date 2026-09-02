@@ -1,64 +1,59 @@
 import platform
-import re
-import statistics
 import subprocess
+import statistics
+import re
 
 
-def run_ping_test(host="8.8.8.8", count=10):
-    system = platform.system()
+def ping_host(host="8.8.8.8", count=10):
+    system = platform.system().lower()
 
-    if system == "Windows":
+    if system == "windows":
         command = ["ping", "-n", str(count), host]
     else:
         command = ["ping", "-c", str(count), host]
 
-    try:
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True
+    )
 
-        output = result.stdout
+    output = result.stdout
 
-        if system == "Windows":
-            pattern = r"time[=<]\s*(\d+(?:\.\d+)?)\s*ms"
+    latencies = []
+
+    if system == "windows":
+        matches = re.findall(r"time[=<]\s*(\d+)\s*ms", output)
+    else:
+        matches = re.findall(r"time[=<]\s*(\d+(?:\.\d+)?)\s*ms", output)
+
+    for value in matches:
+        latencies.append(float(value))
+
+    successful = len(latencies)
+
+    packet_loss = ((count - successful) / count) * 100
+
+    if latencies:
+        average_latency = statistics.mean(latencies)
+
+        if len(latencies) > 1:
+            jitter = statistics.stdev(latencies)
         else:
-            pattern = r"time[=<]\s*(\d+(?:\.\d+)?)\s*ms"
+            jitter = 0
+    else:
+        average_latency = None
+        jitter = None
 
-        values = [float(x) for x in re.findall(pattern, output)]
+    return {
+        "host": host,
+        "average_latency_ms": round(average_latency, 2)
+        if average_latency is not None else None,
 
-        successful = len(values)
-        packet_loss = ((count - successful) / count) * 100
+        "packet_loss_percent": round(packet_loss, 2),
 
-        if not values:
-            return {
-                "host": host,
-                "average_latency_ms": None,
-                "packet_loss_percent": round(packet_loss, 2),
-                "jitter_ms": None,
-                "status": "failed",
-            }
+        "jitter_ms": round(jitter, 2)
+        if jitter is not None else None,
 
-        average = statistics.mean(values)
-
-        # Standard deviation gives a useful first approximation of jitter.
-        jitter = statistics.stdev(values) if len(values) > 1 else 0
-
-        return {
-            "host": host,
-            "average_latency_ms": round(average, 2),
-            "packet_loss_percent": round(packet_loss, 2),
-            "jitter_ms": round(jitter, 2),
-            "status": "success",
-        }
-
-    except (subprocess.SubprocessError, OSError):
-        return {
-            "host": host,
-            "average_latency_ms": None,
-            "packet_loss_percent": 100.0,
-            "jitter_ms": None,
-            "status": "failed",
-        }
+        "samples": successful
+    }
